@@ -1,7 +1,6 @@
 package cn.edu.pku.hql.bitcoin;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -10,11 +9,55 @@ import java.util.zip.Inflater;
  */
 public class InformallReader {
 
-    private static String getValue(String line) {
+    public static String WEB_PAGES_ENCODING = "GBK";
+
+    private InputStream in;
+
+    public InformallReader(InputStream inputStream) {
+        this.in = inputStream;
+    }
+
+    public Document nextDocument() throws IOException, DataFormatException {
+        String line;
+        do {
+            line = readLine();
+            if (line == null)   return null;
+        } while (line.isEmpty());
+        if (!line.startsWith("version")) {
+            throw new IOException("Infomall data format error: each document should start with version");
+        }
+
+        // read meta data
+        String version = line.substring(line.indexOf(':') + 2);
+        String url = getValue();
+        String date = getValue();
+        String ip = getValue();
+        String referer = getValue();
+        String anchorText = getValue();
+        int unzipLength, length;
+        unzipLength = Integer.parseInt(getValue());
+        length = Integer.parseInt(getValue());
+        readLine(); // meta data end with an empty line
+
+        // decompress data
+        byte[] buffer = new byte[length];
+        in.read(buffer);
+        Inflater decompresser = new Inflater();
+        decompresser.setInput(buffer);
+        byte[] result = new byte[unzipLength];
+        decompresser.inflate(result);
+        decompresser.end();
+
+        return new Document(version, url, date, ip, referer, anchorText)
+                .setContent(new String(result, WEB_PAGES_ENCODING));
+    }
+
+    private String getValue() throws IOException {
+        String line = readLine();
         return line.substring(line.indexOf(':') + 2);
     }
 
-    private static String readLine(InputStream in) throws IOException {
+    private String readLine() throws IOException {
         StringBuffer sb = new StringBuffer();
         int b;
         while ((b = in.read()) != -1) {
@@ -22,54 +65,8 @@ public class InformallReader {
             if (value == '\n')  break;
             sb.append(value);
         }
+        if (b == -1 && sb.length() == 0)
+            return null;
         return sb.toString();
-    }
-
-    public static void main(String[] args) throws IOException, DataFormatException {
-        if (args.length < 1) {
-            System.err.println("Args: fileName");
-            System.exit(1);
-        }
-        FileInputStream in = new FileInputStream(args[0]);
-        //BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        int docCnt = 0;
-        int unzipLength, length;
-        //while ((line = reader.readLine()) != null) {
-        line = readLine(in);
-        String version = getValue(line);    line = readLine(in);
-        String url = getValue(line);    line = readLine(in);
-        String date = getValue(line);   line = readLine(in);
-        String ip = getValue(line); line = readLine(in);
-        String referer = getValue(line); line = readLine(in);
-        String anchorText = getValue(line); line = readLine(in);
-        unzipLength = Integer.parseInt(getValue(line)); line = readLine(in);
-        length = Integer.parseInt(getValue(line));
-        System.out.println(length);
-        line = readLine(in);
-
-        byte[] buffer = new byte[length];
-        System.out.println(in.read(buffer));
-        Inflater decompresser = new Inflater();
-        decompresser.setInput(buffer);
-        byte[] result = new byte[unzipLength];
-        int resultLength = decompresser.inflate(result);
-        decompresser.end();
-        System.out.println(resultLength);
-        //System.out.println(new String(result, "GBK"));
-
-        System.out.println(readLine(in));
-        System.out.println(readLine(in));
-//        StringBuffer sb = new StringBuffer();
-//        line = "";
-//        while (!line.startsWith("version")) {
-//            sb.append(line + "\n\r");
-//            line = readLine(in);
-//        }
-//        System.out.println(sb.length());
-//        System.out.println(line);
-//        System.out.println(reader.readLine());
-//            docCnt++;
-        //}
     }
 }
