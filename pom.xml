@@ -11,6 +11,7 @@
     <properties>
         <commons.lang3.version>3.4</commons.lang3.version>
         <junit.version>4.12</junit.version>
+        <azure.version>4.0.0</azure.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -25,6 +26,11 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-storage</artifactId>
+            <version>${azure.version}</version>
         </dependency>
     </dependencies>
 
