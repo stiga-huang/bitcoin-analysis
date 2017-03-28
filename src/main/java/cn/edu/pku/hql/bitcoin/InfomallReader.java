@@ -7,14 +7,18 @@ import java.util.zip.Inflater;
 /**
  * Created by huangql on 12/15/16.
  */
-public class InformallReader {
+public class InfomallReader implements AutoCloseable {
 
     public static String WEB_PAGES_ENCODING = "GBK";
 
     private InputStream in;
 
-    public InformallReader(InputStream inputStream) {
+    public InfomallReader(InputStream inputStream) {
         this.in = inputStream;
+    }
+
+    public void close() throws IOException {
+        in.close();
     }
 
     public Document nextDocument() throws IOException, DataFormatException {
@@ -68,5 +72,29 @@ public class InformallReader {
         if (b == -1 && sb.length() == 0)
             return null;
         return sb.toString();
+    }
+
+    public static void main(String[] args) throws IOException, DataFormatException {
+        if (args.length < 1) {
+            System.err.println("Args: file [docs]");
+            System.exit(1);
+        }
+        String fileName = args[0];
+        int docs = 10;
+        if (args.length < 2) {
+            System.out.println("Read 10 documents in default.");
+        } else {
+            docs = Integer.parseInt(args[1]);
+        }
+        try (InfomallReader reader = new InfomallReader(new FileInputStream(fileName))) {
+            while (docs-- > 0) {
+                Document doc = reader.nextDocument();
+                if (doc == null) {
+                    System.out.println("No more documents.");
+                    break;
+                }
+                System.out.println(doc);
+            }
+        }
     }
 }

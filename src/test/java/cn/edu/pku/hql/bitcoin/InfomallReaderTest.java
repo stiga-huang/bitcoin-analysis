@@ -14,23 +14,23 @@ public class InfomallReaderTest {
     public void ReaderTest() throws Exception {
         try (InputStream in = InfomallReaderTest.class.getClassLoader()
                 .getResourceAsStream("Web_Raw.small")) {
-            InformallReader reader = new InformallReader(in);
+            InfomallReader reader = new InfomallReader(in);
 
             Document doc = reader.nextDocument();
             Assert.assertNotNull(doc.getContent());
-            Assert.assertEquals(102564, doc.getContent().getBytes(InformallReader.WEB_PAGES_ENCODING).length);
+            Assert.assertEquals(102564, doc.getContent().getBytes(InfomallReader.WEB_PAGES_ENCODING).length);
 
             doc = reader.nextDocument();
             Assert.assertNotNull(doc.getContent());
-            Assert.assertEquals(103779, doc.getContent().getBytes(InformallReader.WEB_PAGES_ENCODING).length);
+            Assert.assertEquals(103779, doc.getContent().getBytes(InfomallReader.WEB_PAGES_ENCODING).length);
 
             doc = reader.nextDocument();
             Assert.assertNotNull(doc.getContent());
-            Assert.assertEquals(19357, doc.getContent().getBytes(InformallReader.WEB_PAGES_ENCODING).length);
+            Assert.assertEquals(19357, doc.getContent().getBytes(InfomallReader.WEB_PAGES_ENCODING).length);
 
             doc = reader.nextDocument();
             Assert.assertNotNull(doc.getContent());
-            Assert.assertEquals(18500, doc.getContent().getBytes(InformallReader.WEB_PAGES_ENCODING).length);
+            Assert.assertEquals(18500, doc.getContent().getBytes(InfomallReader.WEB_PAGES_ENCODING).length);
         }
     }
 }

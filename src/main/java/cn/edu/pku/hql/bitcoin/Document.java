@@ -54,4 +54,10 @@ public class Document {
     public String getAnchorText() {
         return anchorText;
     }
+
+    public String toString() {
+        return "version: " + version + "\nurl: " + url + "\ndate: " + date +
+                "\nip: " + ip + "\nreferer: " + referer + "\nanchortext: " +
+                anchorText + "\n\n" + content;
+    }
 }
